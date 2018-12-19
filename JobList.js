@@ -9,7 +9,8 @@ export default class JobList extends React.Component {
 
     state = {
         keyWords: this.props.navigation.getParam("keyWord", ""),
-        jobs: []
+        jobs: [],
+        loaded: ""
     }
 
     handleOnPress = (job) => {
@@ -21,8 +22,9 @@ export default class JobList extends React.Component {
             .get(`https://jobs.github.com/positions.json?search=${this.state.keyWords}`)
             .then(resp => {
                 this.setState({jobs: resp.data});
+                this.setState({loaded: "yes"});
             })
-            .catch(err => {console.warn(err.message);} );
+            .catch(err => { console.warn(err.message); });
     }
 
     render(){
@@ -30,17 +32,24 @@ export default class JobList extends React.Component {
             <View style={styles.container}>
                 <ScrollView contentContainerStyle={{paddingVertical: 20}}>
                     {
-                        this.state.jobs.map((job) =>
-                            <TouchableOpacity
-                                style={styles.box}
-                                key={job.id}
-                                onPress={() => this.handleOnPress(job)}
-                            >
-                                <Text style={styles.jobTitle}>{job.title}</Text>
-                                <Text style={styles.jobCompany}>{job.company}</Text>
-                                <Text style={styles.jobType}>{job.type}</Text>
-                            </TouchableOpacity>
-                        )
+                        this.state.loaded == "" && <Text>Loading...</Text>
+                    }
+                    {
+                        this.state.jobs.length != 0 && 
+                            this.state.jobs.map((job) =>
+                                <TouchableOpacity
+                                    style={styles.box}
+                                    key={job.id}
+                                    onPress={() => this.handleOnPress(job)}
+                                >
+                                    <Text style={styles.jobTitle}>{job.title}</Text>
+                                    <Text style={styles.jobCompany}>{job.company}</Text>
+                                    <Text style={styles.jobType}>{job.type}</Text>
+                                </TouchableOpacity>
+                            )
+                    }
+                    {
+                        this.state.loaded == "yes" && this.state.jobs.length == 0 && <Text>No Jobs Found</Text>
                     }
                 </ScrollView>
             </View>
@@ -89,7 +98,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     box: {
-        height: 85,
+        height: 100,
         width: 300,
         alignSelf:'center',
         borderBottomWidth: 1,

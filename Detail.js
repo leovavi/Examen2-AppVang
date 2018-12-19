@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Platform, ScrollView, Image, Dimensions } from 'react-native';
+import HTMLView from 'react-native-htmlview'; 
 
 export default class Deatil extends React.Component {
     static navigationOptions = {
@@ -10,25 +11,20 @@ export default class Deatil extends React.Component {
         job: this.props.navigation.getParam("job", "")
     }
 
-    componentDidMount(){
-        const regex = /<\/?[^>]+(>|$)/g;
-        let tempJob = this.state.job;
-        let desc = tempJob.description.replace(regex, "");
-        tempJob.description = desc;
-
-        this.setState({
-            job: tempJob
-        })
-    }
-
     render(){
         return(
             <View style={styles.container}>
-                <ScrollView contentContainerStyle={{paddingVertical: 20}}>
+                <ScrollView contentContainerStyle={{paddingVertical: 25, padding: 15}}>
                     <Text style={styles.jobTitle}>{this.state.job.title}</Text>
                     <Text style={styles.jobCompany}>{this.state.job.company}</Text>
                     <Text style={styles.jobType}>{this.state.job.type}</Text>
-                    <Text style={styles.description}>{this.state.job.description}</Text>
+                    <Image 
+                        style={{width: 250, height: 250, resizeMode: "contain"}}
+                        source={{uri: this.state.job.company_logo}}
+                    />
+                    <HTMLView value={this.state.job.description} />
+                    <Text/>
+                    <HTMLView value={this.state.job.how_to_apply} />
                 </ScrollView>
             </View>
         )
